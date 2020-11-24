@@ -1,6 +1,6 @@
   AREA     cos_fun, CODE, READONLY
      EXPORT __sin	 
-     IMPORT printMsg
+     IMPORT printMsg2p
 		 
 pi EQU	0x40490fdb	 
        ENTRY
@@ -26,8 +26,13 @@ ITER_var	   LDR		R3, = 100 ; loop variable
 	   VLDR.F32		S3, = 3	;
 
 lOOP    VMUL.F32        S18,S18,S3 ; calculate 3!,5!,7!......
-     	VDIV.F32		S4,S2,S18 ; s4 = s2 / s18 => -x^3/3! , x^4/4!, ....
-	    VADD.F32		S30,S4   ; Calculate new iteration value s30 = s30 + s4 ;
+     	VDIV.F32		S4,S2,S18 ; s4 = s2 / s18 => -x^3/3! , x^4/5!, ....
+	     VMOV.F32		S17,S30 	; Store previous iteration value to compare
+	   VADD.F32		S30,S4   ; Calculate new iteration value s5 = s5 + s4 ;
+	   VCMP.F32		S17,S30	; Compare with previous iteration value
+	   VMRS.F32		APSR_nzcv, FPSCR ;Copy Floating point status registers into normal status registers 
+	   BEQ			Stop   	; Stop if series converges(previous value equal to present value)
+							; Even if counter in Not Zero
 	    VADD.F32		S3,S19 	; Denominator Value s3 = s3 + s19 
 	    VMUL.F32		S18,S3	; Factorial s18 = s18 * s3
 	    VADD.F32		S3,S19 	; Denominator Value
@@ -35,8 +40,7 @@ lOOP    VMUL.F32        S18,S18,S3 ; calculate 3!,5!,7!......
 	   SUB			R3,#1
 	   CMP			R3,#0	;compare if maimum iteration is reached 
 	   BNE 			lOOP	;Goto Next iteration if maximum iteration is not reached
-Stop    VCVTR.S32.F32 S30,S30
-		VMOV.F32		R0,S30
+Stop   VMOV.F32		R0,S30
 	   POP          {R4-R12,LR}
 		BX LR
 	 

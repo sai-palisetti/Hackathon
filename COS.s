@@ -1,7 +1,7 @@
  AREA     cos_fun, CODE, READONLY
 	 
      EXPORT __cos	 
-     IMPORT printMsg
+     IMPORT printMsg2p
 	 
 		 
 		 
@@ -43,8 +43,7 @@ LOOP 	VDIV.F32		S4,S2,S18 ; s4 = s2 / s18 => -x^2/2! , x^4/4!, ....
 	   SUB			R3,#1
 	   CMP			R3,#0	;compare if maimum iteration is reached 
 	   BNE 			LOOP	;Goto Next iteration if maximum iteration is not reached
-stop   VCVTR.S32.F32 S5,S5
-       VMOV.F32		R0,S5
+stop   VMOV.F32		R0,S5
        POP        {R4-R12,LR}
 	   BX LR
 	 	
